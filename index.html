@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Chill of the Ice Dragon Quiz (30 Questions)</title>
+  <style>
+    :root{
+      --bg1:#07111f;
+      --bg2:#0b1e33;
+      --card:#0f2a43;
+      --text:#e9f2ff;
+      --muted:#bcd2f4;
+      --accent:#7dd3fc;
+      --ok:#22c55e;
+      --bad:#ef4444;
+      --border:rgba(255,255,255,.14);
+      --shadow:rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1000px 600px at 15% 20%, rgba(125,211,252,.18), transparent 60%),
+        radial-gradient(900px 600px at 85% 25%, rgba(34,197,94,.10), transparent 62%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .wrap{width:min(900px, 100%)}
+    .card{
+      background:linear-gradient(180deg, rgba(15,42,67,.96), rgba(10,30,51,.96));
+      border:1px solid var(--border);
+      box-shadow:0 18px 50px var(--shadow);
+      border-radius:18px;
+      overflow:hidden;
+    }
+    header{
+      padding:18px 18px 14px 18px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    h1{
+      font-size:18px;
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.25;
+    }
+    .pillbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      color:var(--muted);
+      background:rgba(255,255,255,.04);
+      white-space:nowrap;
+    }
+    main{padding:18px}
+    .screen{display:none}
+    .screen.active{display:block}
+    .hero{
+      padding:18px;
+      border:1px dashed rgba(125,211,252,.35);
+      background:rgba(125,211,252,.06);
+      border-radius:14px;
+    }
+    .hero h2{
+      margin:0 0 8px 0;
+      font-size:18px;
+    }
+    .hero p{
+      margin:0 0 16px 0;
+      color:var(--muted);
+      line-height:1.45;
+      font-size:14px;
+    }
+    .btn{
+      appearance:none;
+      border:1px solid rgba(125,211,252,.45);
+      background:rgba(125,211,252,.16);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:14px;
+      cursor:pointer;
+      transition:transform .06s ease, background .15s ease, border-color .15s ease;
+    }
+    .btn:hover{background:rgba(125,211,252,.22); border-color:rgba(125,211,252,.65)}
+    .btn:active{transform:translateY(1px)}
+    .qtop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .qnum{
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.2px;
+      margin-top:2px;
+    }
+    .question{
+      font-size:18px;
+      line-height:1.35;
+      margin:2px 0 0 0;
+    }
+    .options{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+    .opt{
+      text-align:left;
+      width:100%;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:12px 12px;
+      cursor:pointer;
+      font-size:14px;
+      line-height:1.35;
+      transition:transform .06s ease, background .15s ease, border-color .15s ease;
+    }
+    .opt:hover{background:rgba(255,255,255,.07)}
+    .opt:active{transform:translateY(1px)}
+    .opt:disabled{cursor:not-allowed; opacity:.92}
+    .opt.correct{
+      border-color:rgba(34,197,94,.75);
+      background:rgba(34,197,94,.16);
+    }
+    .opt.wrong{
+      border-color:rgba(239,68,68,.75);
+      background:rgba(239,68,68,.14);
+    }
+    .feedback{
+      margin-top:14px;
+      min-height:26px;
+      font-weight:600;
+      letter-spacing:.2px;
+    }
+    .feedback.ok{color:var(--ok)}
+    .feedback.bad{color:var(--bad)}
+    .note{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .results{
+      padding:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.03);
+      border-radius:14px;
+    }
+    .results h2{margin:0 0 10px 0; font-size:18px}
+    .results p{margin:0; color:var(--muted); line-height:1.45}
+    .scorebig{
+      margin:10px 0 8px 0;
+      font-size:28px;
+      font-weight:800;
+      letter-spacing:.4px;
+    }
+    footer{
+      padding:12px 18px;
+      border-top:1px solid var(--border);
+      color:rgba(188,210,244,.85);
+      font-size:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    kbd{
+      font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:11px;
+      padding:2px 6px;
+      border-radius:6px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <header>
+        <div class="title">
+          <h1>Chill of the Ice Dragon (Tracey West) Quiz</h1>
+          <p class="sub">30 multiple-choice questions • instant feedback • auto-advance</p>
+        </div>
+        <div class="pillbar">
+          <div class="pill" id="pillProgress">Question: — / 30</div>
+          <div class="pill" id="pillScore">Score: 0</div>
+        </div>
+      </header>
+
+      <main>
+        <!-- Start Screen -->
+        <section class="screen active" id="startScreen">
+          <div class="hero">
+            <h2>Ready to test your Dragon Masters brain?</h2>
+            <p>
+              Click <strong>Start</strong>. You’ll get one question at a time. When you pick an answer,
+              you’ll see whether it’s right, and then the quiz moves on automatically.
+              Refreshing the page resets everything (because that’s how the universe stays fair).
+            </p>
+            <button class="btn" id="startBtn">Start Quiz</button>
+          </div>
+        </section>
+
+        <!-- Quiz Screen -->
+        <section class="screen" id="quizScreen">
+          <div class="qtop">
+            <div>
+              <div class="qnum" id="qNum">Question 1 of 30</div>
+              <p class="question" id="qText">Question text</p>
+            </div>
+          </div>
+
+          <div class="options" id="options"></div>
+
+          <div class="feedback" id="feedback" aria-live="polite"></div>
+          <div class="note" id="note"></div>
+        </section>
+
+        <!-- Results Screen -->
+        <section class="screen" id="resultsScreen">
+          <div class="results">
+            <h2>Final Score</h2>
+            <div class="scorebig" id="finalScore">0 / 30</div>
+            <p id="finalLine">Refresh the page to take the quiz again.</p>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div>Auto-advance: <kbd>~2.2s</kbd> after answering</div>
+        <div>Reset: <kbd>Refresh</kbd></div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // 30 questions, 4 options each (1 correct + 3 plausible distractors)
+    const quiz = [
+      {
+        q: "What series is 'Chill of the Ice Dragon' part of?",
+        options: ["Dragon Masters", "Wings of Fire", "How to Train Your Dragon", "The Last Firehawk"],
+        a: 0
+      },
+      {
+        q: "In the Dragon Masters series, what number is 'Chill of the Ice Dragon'?",
+        options: ["Book 3", "Book 6", "Book 9", "Book 12"],
+        a: 2
+      },
+      {
+        q: "Who is the Dragon Master who arrives at the castle asking for help?",
+        options: ["Petra", "Mina", "Zelda", "Darma"],
+        a: 1
+      },
+      {
+        q: "Where is Mina from?",
+        options: ["The Desert Kingdom", "The Far North Lands", "The Jungle Realm", "The Mountain Isles"],
+        a: 1
+      },
+      {
+        q: "What is the name of Mina’s dragon?",
+        options: ["Vulcan", "Shu", "Frost", "Kepri"],
+        a: 2
+      },
+      {
+        q: "What kind of dragon is Frost?",
+        options: ["Ice Dragon", "Moon Dragon", "Thunder Dragon", "Poison Dragon"],
+        a: 0
+      },
+      {
+        q: "What has happened to Mina’s kingdom when she seeks help?",
+        options: ["It was buried in sand", "It was flooded by a storm", "It was frozen by magic", "It was taken over by pirates"],
+        a: 2
+      },
+      {
+        q: "What is the name of the Ice Giant threatening the Far North Lands?",
+        options: ["Zoltan", "Maldred", "Vasty", "Kishar"],
+        a: 2
+      },
+      {
+        q: "What does Mina say is needed to defeat the Ice Giant?",
+        options: ["A Fire Dragon", "A Water Dragon", "A Gold Dragon", "A Dream Dragon"],
+        a: 0
+      },
+      {
+        q: "Which Dragon Master is bonded with the Fire Dragon Vulcan?",
+        options: ["Ana", "Bo", "Rori", "Drake"],
+        a: 2
+      },
+      {
+        q: "Why is it a problem when Mina arrives at the castle?",
+        options: ["The Dragon Stone is missing", "Rori and Vulcan are no longer at the castle", "Worm is too sick to travel", "The castle gates are frozen shut"],
+        a: 1
+      },
+      {
+        q: "What is the main mission the Dragon Masters take on in this story?",
+        options: ["Find the Moon Dragon", "Steal back a Dragon Stone", "Find Rori and bring a Fire Dragon to stop the Ice Giant", "Build a new castle in the Far North"],
+        a: 2
+      },
+      {
+        q: "Which Dragon Master is bonded with Worm?",
+        options: ["Drake", "Bo", "Rori", "Mina"],
+        a: 0
+      },
+      {
+        q: "What special travel ability is connected to Worm in the series (and referenced in this story)?",
+        options: ["He can turn invisible", "He can transport people to different places when they touch him", "He can fly for days without resting", "He can breathe fire hot enough to melt steel"],
+        a: 1
+      },
+      {
+        q: "During a fight, what color energy beams are described coming from Worm’s eyes?",
+        options: ["Blue", "Green", "Red", "Gold"],
+        a: 1
+      },
+      {
+        q: "Which dragon is described as glowing with energy during a battle scene in the story?",
+        options: ["Neru", "Kepri", "Shu", "Frost"],
+        a: 0
+      },
+      {
+        q: "In this part of the series, who is Neru’s Dragon Master?",
+        options: ["Eko", "Carlos", "Heru", "Dayo"],
+        a: 0
+      },
+      {
+        q: "What is used to control a dragon during the conflict?",
+        options: ["A magic crystal", "A golden chain", "A whistle made of bone", "A silver crown"],
+        a: 0
+      },
+      {
+        q: "Vasty is described as using a staff in the final fight. What happens when Frost knocks it away?",
+        options: ["The castle walls collapse", "Vasty loses an advantage and the fight shifts", "Frost instantly falls asleep", "The dragons forget their powers"],
+        a: 1
+      },
+      {
+        q: "What is the name of Ana’s dragon?",
+        options: ["Kepri", "Wati", "Zera", "Argent"],
+        a: 0
+      },
+      {
+        q: "How does Ana’s Sun Dragon help during the icy conflict?",
+        options: ["By making it rain", "By using sunlight to melt ice", "By digging tunnels under the fortress", "By creating thunderclouds"],
+        a: 1
+      },
+      {
+        q: "Who is the wizard mentor connected to the Dragon Masters at King Roland’s castle?",
+        options: ["Griffith", "Maldred", "Zoltan", "Emperor Song"],
+        a: 0
+      },
+      {
+        q: "What is the name of the wizard/dragon trainer associated with Mina who fights Vasty with magic?",
+        options: ["Astrid", "Hulda", "Opeli", "Quilla"],
+        a: 1
+      },
+      {
+        q: "What tool is mentioned as being used to show Mina the Dragon Masters before she meets them?",
+        options: ["A gazing ball", "A dragon horn", "A shadow mirror", "A rune compass"],
+        a: 0
+      },
+      {
+        q: "Who rules the Bracken kingdom where Drake trains?",
+        options: ["King Lars", "King Roland", "King Darma", "King Neru"],
+        a: 1
+      },
+      {
+        q: "Who is the king of Mina’s Far North kingdom mentioned in summaries of the story?",
+        options: ["King Lars", "King Roland", "King Carlos", "King Heru"],
+        a: 0
+      },
+      {
+        q: "How is Vasty ultimately dealt with at the end of the story?",
+        options: ["He is trapped in a cage of vines", "He is shrunken and sent away through an icy tunnel/portal", "He turns into a dragon and flies off", "He makes peace and becomes an ally"],
+        a: 1
+      },
+      {
+        q: "After the adventure, what major decision does Rori make (as described in story summaries/reviews)?",
+        options: ["She leaves forever to become a knight", "She stays to train with her friends instead of leaving again", "She gives Vulcan to Mina", "She becomes the new castle wizard"],
+        a: 1
+      },
+      {
+        q: "Why is using fire on frozen people treated carefully in the story?",
+        options: ["Fire magic can make ice poisonous", "Too much fire could hurt them", "Fire only works at night", "Fire makes the Ice Giant stronger"],
+        a: 1
+      },
+      {
+        q: "What idea is strongly emphasized by the Dragon Masters’ success in the story?",
+        options: ["Working together and using each dragon’s strengths", "Never trusting new people", "Winning is all that matters", "Magic is always dangerous"],
+        a: 0
+      }
+    ];
+
+    // State
+    let current = -1;
+    let score = 0;
+    let locked = false;
+
+    // Elements
+    const startScreen = document.getElementById("startScreen");
+    const quizScreen = document.getElementById("quizScreen");
+    const resultsScreen = document.getElementById("resultsScreen");
+
+    const startBtn = document.getElementById("startBtn");
+    const qNum = document.getElementById("qNum");
+    const qText = document.getElementById("qText");
+    const optionsEl = document.getElementById("options");
+    const feedbackEl = document.getElementById("feedback");
+    const noteEl = document.getElementById("note");
+    const finalScoreEl = document.getElementById("finalScore");
+    const finalLineEl = document.getElementById("finalLine");
+
+    const pillProgress = document.getElementById("pillProgress");
+    const pillScore = document.getElementById("pillScore");
+
+    function showScreen(which){
+      startScreen.classList.remove("active");
+      quizScreen.classList.remove("active");
+      resultsScreen.classList.remove("active");
+      which.classList.add("active");
+    }
+
+    function updatePills(){
+      pillScore.textContent = `Score: ${score}`;
+      if (current >= 0 && current < quiz.length){
+        pillProgress.textContent = `Question: ${current + 1} / ${quiz.length}`;
+      } else {
+        pillProgress.textContent = `Question: — / ${quiz.length}`;
+      }
+    }
+
+    function renderQuestion(){
+      locked = false;
+      feedbackEl.textContent = "";
+      feedbackEl.className = "feedback";
+      noteEl.textContent = "";
+
+      const item = quiz[current];
+      qNum.textContent = `Question ${current + 1} of ${quiz.length}`;
+      qText.textContent = item.q;
+
+      optionsEl.innerHTML = "";
+      item.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "opt";
+        btn.textContent = opt;
+        btn.addEventListener("click", () => handleAnswer(idx, btn));
+        optionsEl.appendChild(btn);
+      });
+
+      updatePills();
+    }
+
+    function disableAllOptions(){
+      [...optionsEl.querySelectorAll(".opt")].forEach(b => b.disabled = true);
+    }
+
+    function handleAnswer(choiceIdx){
+      if (locked) return;
+      locked = true;
+
+      const item = quiz[current];
+      const buttons = [...optionsEl.querySelectorAll(".opt")];
+      disableAllOptions();
+
+      const correctIdx = item.a;
+
+      if (choiceIdx === correctIdx){
+        score += 1;
+        feedbackEl.textContent = "That's Correct!";
+        feedbackEl.classList.add("ok");
+        buttons[choiceIdx].classList.add("correct");
+      } else {
+        feedbackEl.textContent = "Incorrect";
+        feedbackEl.classList.add("bad");
+        buttons[choiceIdx].classList.add("wrong");
+        buttons[correctIdx].classList.add("correct");
+        noteEl.textContent = "Correct answer highlighted.";
+      }
+
+      updatePills();
+
+      // Auto-advance after a few seconds
+      setTimeout(() => {
+        current += 1;
+        if (current < quiz.length){
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      }, 2200);
+    }
+
+    function showResults(){
+      showScreen(resultsScreen);
+      finalScoreEl.textContent = `${score} / ${quiz.length}`;
+
+      const pct = Math.round((score / quiz.length) * 100);
+      finalLineEl.textContent = `You scored ${pct}%. Refresh the page to take the quiz again.`;
+      updatePills();
+    }
+
+    startBtn.addEventListener("click", () => {
+      score = 0;
+      current = 0;
+      showScreen(quizScreen);
+      renderQuestion();
+    });
+
+    // Initial pill state
+    updatePills();
+  </script>
+</body>
+</html>
